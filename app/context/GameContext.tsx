@@ -5,6 +5,7 @@ export interface Game {
   name: string;
   genre: string;
   description: string;
+  url?: string;
   badges: { label: string; type: "ia" | "dest" | "pct" }[];
   compat: { label: string; type: "green" | "yellow" | "red" };
 }

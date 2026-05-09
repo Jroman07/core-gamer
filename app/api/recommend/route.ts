@@ -34,6 +34,7 @@ Cada objeto en el arreglo debe tener exactamente la siguiente estructura:
   "name": "Nombre del juego",
   "genre": "Género principal / Secundario",
   "description": "Breve descripción destacando por qué le gustaría (max 100 caracteres)",
+  "url": "URL oficial del juego o su página en Steam/Epic Games",
   "badges": [
     { "label": "IA Match", "type": "ia" },
     { "label": "95%", "type": "pct" }
