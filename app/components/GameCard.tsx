@@ -10,7 +10,6 @@ interface GameCardProps {
   name: string;
   genre: string;
   description: string;
-  image: string;
   badges: Badge[];
   compat: { label: string; type: "green" | "yellow" };
 }
@@ -33,7 +32,7 @@ const badgeStyles = {
   },
 };
 
-export default function GameCard({ name, genre, description, image, badges, compat }: GameCardProps) {
+export default function GameCard({ name, genre, description, badges, compat }: GameCardProps) {
   const [hovered, setHovered] = useState(false);
 
   return (
@@ -49,37 +48,22 @@ export default function GameCard({ name, genre, description, image, badges, comp
         display: "flex", flexDirection: "column",
       }}
     >
-      {/* Image */}
-      <div style={{ height: 192, position: "relative", overflow: "hidden" }}>
-        <img
-          src={image}
-          alt={name}
-          style={{
-            width: "100%", height: "140%",
-            objectFit: "cover",
-            position: "absolute", top: "-20%", left: 0,
-            transform: hovered ? "scale(1.05)" : "scale(1)",
-            transition: "transform 0.4s ease",
-          }}
-        />
+      {/* Info */}
+      <div style={{ padding: 24, display: "flex", flexDirection: "column", gap: 4, flex: 1 }}>
         {/* Badges */}
-        <div style={{ position: "absolute", top: 12, left: 12, display: "flex", gap: 8 }}>
+        <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
           {badges.map((b) => (
             <div key={b.label} style={{
               padding: "5px 9px", borderRadius: 2,
               fontFamily: "var(--font-body)", fontWeight: 700,
               fontSize: 10, letterSpacing: 0.5, textTransform: "uppercase",
-              backdropFilter: "blur(6px)",
               ...badgeStyles[b.type],
             }}>
               {b.label}
             </div>
           ))}
         </div>
-      </div>
 
-      {/* Info */}
-      <div style={{ padding: 24, display: "flex", flexDirection: "column", gap: 4, flex: 1 }}>
         <div style={{
           fontFamily: "var(--font-display)", fontWeight: 700,
           fontSize: 20, color: "var(--text-primary)",
