@@ -62,22 +62,6 @@ export default function GameCard({ name, genre, description, url, badges, compat
         display: "flex", flexDirection: "column",
       }}
     >
-      {/* Website Preview */}
-      {url && (
-        <div style={{ height: 180, position: "relative", overflow: "hidden", borderBottom: "1px solid rgba(132,147,150,0.15)" }}>
-          <img
-            src={`https://image.thum.io/get/width/600/crop/800/${url}`}
-            alt={`Preview of ${name}`}
-            style={{
-              width: "100%", height: "100%",
-              objectFit: "cover",
-              transform: hovered ? "scale(1.05)" : "scale(1)",
-              transition: "transform 0.4s ease",
-            }}
-          />
-        </div>
-      )}
-
       {/* Info */}
       <div style={{ padding: 24, display: "flex", flexDirection: "column", gap: 4, flex: 1 }}>
         {/* Badges */}
