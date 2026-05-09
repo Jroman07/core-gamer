@@ -37,7 +37,13 @@ export default function FormSection() {
     );
   };
 
-  const handleGenerate = () => {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault(); // Evita que la página se recargue
+    
+    // Aquí tienes los datos listos para enviar a tu API
+    const formData = { selectedGenres, style, cpu, gpu, ram, storage };
+    console.log("Formulario enviado:", formData);
+
     document.getElementById("results")?.scrollIntoView({ behavior: "smooth" });
   };
 
@@ -79,7 +85,7 @@ export default function FormSection() {
         </div>
 
         {/* Bento Grid */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: 24 }}>
+        <form onSubmit={handleSubmit} style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: 24 }}>
 
           {/* Genre */}
           <BentoCard style={{ gridColumn: "1 / span 8" }}>
@@ -96,6 +102,7 @@ export default function FormSection() {
                 return (
                   <button
                     key={g}
+                    type="button"
                     onClick={() => toggleGenre(g)}
                     style={{
                       display: "flex", alignItems: "center", gap: 12,
@@ -134,6 +141,7 @@ export default function FormSection() {
 
             <div style={{ position: "relative" }}>
               <select
+                aria-label="Estilo de juego"
                 value={style}
                 onChange={(e) => setStyle(e.target.value)}
                 style={{ ...selectStyle, marginBottom: 15 }}
@@ -172,12 +180,13 @@ export default function FormSection() {
                 { label: "Gráficos (GPU)", value: gpu, setter: setGpu, placeholder: "RTX 3080 / RX 6800", type: "input" },
               ].map((field) => (
                 <div key={field.label}>
-                  <label style={{
+                  <label htmlFor={field.label} style={{
                     display: "block", marginBottom: 8,
                     fontFamily: "var(--font-body)", fontWeight: 700, fontSize: 10,
                     letterSpacing: 1, textTransform: "uppercase", color: "var(--text-muted)",
                   }}>{field.label}</label>
                   <input
+                    id={field.label}
                     type="text"
                     value={field.value as string}
                     onChange={(e) => (field.setter as (v: string) => void)(e.target.value)}
@@ -190,12 +199,12 @@ export default function FormSection() {
               ))}
 
               <div>
-                <label style={{
+                <label htmlFor="ram-select" style={{
                   display: "block", marginBottom: 8,
                   fontFamily: "var(--font-body)", fontWeight: 700, fontSize: 10,
                   letterSpacing: 1, textTransform: "uppercase", color: "var(--text-muted)",
                 }}>Memoria RAM</label>
-                <select value={ram} onChange={(e) => setRam(e.target.value)} style={selectStyle}>
+                <select id="ram-select" value={ram} onChange={(e) => setRam(e.target.value)} style={selectStyle}>
                   {["8 GB", "16 GB", "32 GB", "64 GB"].map((o) => (
                     <option key={o} value={o} style={{ background: "var(--bg-dark)" }}>{o}</option>
                   ))}
@@ -203,12 +212,12 @@ export default function FormSection() {
               </div>
 
               <div>
-                <label style={{
+                <label htmlFor="storage-select" style={{
                   display: "block", marginBottom: 8,
                   fontFamily: "var(--font-body)", fontWeight: 700, fontSize: 10,
                   letterSpacing: 1, textTransform: "uppercase", color: "var(--text-muted)",
                 }}>Almacenamiento</label>
-                <select value={storage} onChange={(e) => setStorage(e.target.value)} style={selectStyle}>
+                <select id="storage-select" value={storage} onChange={(e) => setStorage(e.target.value)} style={selectStyle}>
                   {["SSD NVMe", "SSD SATA", "HDD", "SSD + HDD"].map((o) => (
                     <option key={o} value={o} style={{ background: "var(--bg-dark)" }}>{o}</option>
                   ))}
@@ -218,7 +227,7 @@ export default function FormSection() {
 
             <div style={{ display: "flex", justifyContent: "center" }}>
               <button
-                onClick={handleGenerate}
+                type="submit"
                 style={{
                   display: "inline-flex", alignItems: "center", gap: 12,
                   padding: "16px 48px", borderRadius: 6, border: "none", cursor: "pointer",
@@ -237,7 +246,7 @@ export default function FormSection() {
               </button>
             </div>
           </BentoCard>
-        </div>
+        </form>
       </div>
     </section>
   );
