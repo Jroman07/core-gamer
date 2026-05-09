@@ -2,7 +2,11 @@
   "permissions": {
     "allow": [
       "Bash(Get-ChildItem -Path \"c:\\\\Documentos\\\\IC-2026\\\\Fundamentos-Web\\\\Proyecto-CoreGamer\\\\core-gamer\" -Directory)",
-      "Bash(Select-Object Name)"
+      "Bash(Select-Object Name)",
+      "Bash(npx prisma *)",
+      "Bash(node *)",
+      "Bash(npx tsc *)",
+      "Bash(pnpm add *)"
     ]
   }
 }

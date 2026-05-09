@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useGameContext } from "../context/GameContext";
 
 const genres = ["RPG", "Shooter", "Strategy", "Open World", "Indie", "Sports", "Horror", "Puzzle"];
 
@@ -31,20 +32,43 @@ export default function FormSection() {
   const [ram, setRam] = useState("16 GB");
   const [storage, setStorage] = useState("SSD NVMe");
 
+  const { setGames, loading, setLoading } = useGameContext();
+
   const toggleGenre = (g: string) => {
     setSelectedGenres((prev) =>
       prev.includes(g) ? prev.filter((x) => x !== g) : [...prev, g]
     );
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault(); // Evita que la página se recargue
-    
-    // Aquí tienes los datos listos para enviar a tu API
-    const formData = { selectedGenres, style, cpu, gpu, ram, storage };
-    console.log("Formulario enviado:", formData);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (loading) return;
 
-    document.getElementById("results")?.scrollIntoView({ behavior: "smooth" });
+    setLoading(true);
+    const formData = { selectedGenres, style, cpu, gpu, ram, storage };
+
+    try {
+      const res = await fetch('/api/recommend', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+      const data = await res.json();
+      
+      if (data.games) {
+        setGames(data.games);
+        setTimeout(() => {
+          document.getElementById("results")?.scrollIntoView({ behavior: "smooth" });
+        }, 100);
+      } else {
+        alert(data.error || "Ocurrió un error al conectar con la IA.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error de conexión al generar recomendaciones.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const inputStyle: React.CSSProperties = {
@@ -228,21 +252,25 @@ export default function FormSection() {
             <div style={{ display: "flex", justifyContent: "center" }}>
               <button
                 type="submit"
+                disabled={loading}
                 style={{
                   display: "inline-flex", alignItems: "center", gap: 12,
-                  padding: "16px 48px", borderRadius: 6, border: "none", cursor: "pointer",
-                  background: "linear-gradient(135deg, #00daf3 0%, #00626e 100%)",
+                  padding: "16px 48px", borderRadius: 6, border: "none", 
+                  cursor: loading ? "not-allowed" : "pointer",
+                  background: loading ? "rgba(0, 218, 243, 0.5)" : "linear-gradient(135deg, #00daf3 0%, #00626e 100%)",
                   fontFamily: "var(--font-display)", fontWeight: 700,
                   fontSize: 16, letterSpacing: 1.6, textTransform: "uppercase",
                   color: "var(--accent-dark)", transition: "opacity 0.2s, transform 0.2s",
                 }}
-                onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.85"; e.currentTarget.style.transform = "translateY(-2px)"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.opacity = "1"; e.currentTarget.style.transform = "translateY(0)"; }}
+                onMouseEnter={(e) => { if (!loading) { e.currentTarget.style.opacity = "0.85"; e.currentTarget.style.transform = "translateY(-2px)"; } }}
+                onMouseLeave={(e) => { if (!loading) { e.currentTarget.style.opacity = "1"; e.currentTarget.style.transform = "translateY(0)"; } }}
               >
-                Generar recomendaciones
-                <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-                  <path d="M11 3l8 8-8 8M3 11h16" stroke="#00626e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
+                {loading ? "Analizando..." : "Generar recomendaciones"}
+                {!loading && (
+                  <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                    <path d="M11 3l8 8-8 8M3 11h16" stroke="#00626e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                )}
               </button>
             </div>
           </BentoCard>

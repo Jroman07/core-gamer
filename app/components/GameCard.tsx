@@ -10,9 +10,9 @@ interface GameCardProps {
   name: string;
   genre: string;
   description: string;
-  image: string;
+  url?: string;
   badges: Badge[];
-  compat: { label: string; type: "green" | "yellow" };
+  compat: { label: string; type: "green" | "yellow" | "red" };
 }
 
 const badgeStyles = {
@@ -33,14 +33,27 @@ const badgeStyles = {
   },
 };
 
-export default function GameCard({ name, genre, description, image, badges, compat }: GameCardProps) {
+export default function GameCard({ name, genre, description, url, badges, compat }: GameCardProps) {
   const [hovered, setHovered] = useState(false);
 
+  const handleTrackClick = () => {
+    fetch('/api/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ gameName: name, genre, url }),
+    }).catch(err => console.error("Error al registrar click:", err));
+  };
+
   return (
-    <div
+    <a
+      href={url || "#"}
+      target={url ? "_blank" : "_self"}
+      rel="noreferrer"
+      onClick={handleTrackClick}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
+        textDecoration: "none",
         background: "var(--bg-secondary)",
         border: `1px solid ${hovered ? "rgba(0,229,255,0.3)" : "rgba(132,147,150,0.15)"}`,
         borderRadius: 8, overflow: "hidden",
@@ -49,37 +62,38 @@ export default function GameCard({ name, genre, description, image, badges, comp
         display: "flex", flexDirection: "column",
       }}
     >
-      {/* Image */}
-      <div style={{ height: 192, position: "relative", overflow: "hidden" }}>
-        <img
-          src={image}
-          alt={name}
-          style={{
-            width: "100%", height: "140%",
-            objectFit: "cover",
-            position: "absolute", top: "-20%", left: 0,
-            transform: hovered ? "scale(1.05)" : "scale(1)",
-            transition: "transform 0.4s ease",
-          }}
-        />
+      {/* Website Preview */}
+      {url && (
+        <div style={{ height: 180, position: "relative", overflow: "hidden", borderBottom: "1px solid rgba(132,147,150,0.15)" }}>
+          <img
+            src={`https://image.thum.io/get/width/600/crop/800/${url}`}
+            alt={`Preview of ${name}`}
+            style={{
+              width: "100%", height: "100%",
+              objectFit: "cover",
+              transform: hovered ? "scale(1.05)" : "scale(1)",
+              transition: "transform 0.4s ease",
+            }}
+          />
+        </div>
+      )}
+
+      {/* Info */}
+      <div style={{ padding: 24, display: "flex", flexDirection: "column", gap: 4, flex: 1 }}>
         {/* Badges */}
-        <div style={{ position: "absolute", top: 12, left: 12, display: "flex", gap: 8 }}>
+        <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
           {badges.map((b) => (
             <div key={b.label} style={{
               padding: "5px 9px", borderRadius: 2,
               fontFamily: "var(--font-body)", fontWeight: 700,
               fontSize: 10, letterSpacing: 0.5, textTransform: "uppercase",
-              backdropFilter: "blur(6px)",
               ...badgeStyles[b.type],
             }}>
               {b.label}
             </div>
           ))}
         </div>
-      </div>
 
-      {/* Info */}
-      <div style={{ padding: 24, display: "flex", flexDirection: "column", gap: 4, flex: 1 }}>
         <div style={{
           fontFamily: "var(--font-display)", fontWeight: 700,
           fontSize: 20, color: "var(--text-primary)",
@@ -106,11 +120,11 @@ export default function GameCard({ name, genre, description, image, badges, comp
         }}>
           <div style={{
             width: 8, height: 8, borderRadius: "50%", flexShrink: 0,
-            background: compat.type === "green" ? "var(--accent)" : "var(--gold)",
+            background: compat.type === "green" ? "var(--accent)" : compat.type === "red" ? "#ff4d4d" : "var(--gold)",
           }} />
           {compat.label}
         </div>
       </div>
-    </div>
+    </a>
   );
 }
