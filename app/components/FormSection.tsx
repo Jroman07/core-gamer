@@ -45,6 +45,10 @@ export default function FormSection() {
     if (loading) return;
 
     setLoading(true);
+    setTimeout(() => {
+      document.getElementById("results")?.scrollIntoView({ behavior: "smooth" });
+    }, 0);
+
     const formData = { selectedGenres, style, cpu, gpu, ram, storage };
 
     try {
@@ -57,9 +61,6 @@ export default function FormSection() {
       
       if (data.games) {
         setGames(data.games);
-        setTimeout(() => {
-          document.getElementById("results")?.scrollIntoView({ behavior: "smooth" });
-        }, 100);
       } else {
         alert(data.error || "Ocurrió un error al conectar con la IA.");
       }
