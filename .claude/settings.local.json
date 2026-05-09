@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Path \"c:\\\\Documentos\\\\IC-2026\\\\Fundamentos-Web\\\\Proyecto-CoreGamer\\\\core-gamer\" -Directory)",
+      "Bash(Select-Object Name)"
+    ]
+  }
+}
