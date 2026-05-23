@@ -6,6 +6,7 @@ import GameCard from "./GameCard";
 import { useGameContext } from "../context/GameContext";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
+import { Separator } from "@/components/ui/separator";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { cn } from "@/lib/utils";
 
@@ -60,13 +61,14 @@ export default function ResultsSection() {
   return (
     <section id="results" className="mx-auto max-w-7xl px-4 py-16 md:px-12 md:py-24">
       <div className="mb-10 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between md:mb-12">
-        <div>
-          <p className="mb-1 font-display text-sm font-bold uppercase tracking-widest text-gold">
+        <div className="flex flex-col gap-2">
+          <p className="font-display text-sm font-bold uppercase tracking-widest text-gold">
             Resultados Filtrados
           </p>
           <h2 className="font-display text-3xl font-bold tracking-tight text-foreground md:text-5xl">
             Sugerencias para ti
           </h2>
+          <Separator className="w-24 bg-primary" />
         </div>
 
         <ToggleGroup

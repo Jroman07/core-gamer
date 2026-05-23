@@ -54,7 +54,7 @@ export default function DashboardCharts({
       </div>
 
       {totalClicks === 0 ? (
-        <Card className="glass-card">
+        <Card variant="glass">
           <CardContent className="py-10 text-center">
             <p className="text-muted-foreground">
               Todavía no hay datos. Haz clic en algunas tarjetas de juegos para
@@ -64,7 +64,7 @@ export default function DashboardCharts({
         </Card>
       ) : (
         <div className="flex flex-col gap-8 lg:grid lg:grid-cols-2">
-          <Card className="glass-card">
+          <Card variant="glass">
             <CardHeader>
               <CardTitle className="font-display">
                 Juegos Más Populares (Top 5)
@@ -111,7 +111,7 @@ export default function DashboardCharts({
             </CardContent>
           </Card>
 
-          <Card className="glass-card">
+          <Card variant="glass">
             <CardHeader>
               <CardTitle className="font-display">
                 Distribución por Géneros

@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 const genres = [
@@ -96,11 +97,11 @@ export default function FormSection() {
       if (data.games) {
         setGames(data.games);
       } else {
-        alert(data.error || "Ocurrió un error al conectar con la IA.");
+        toast.error(data.error || "Ocurrió un error al conectar con la IA.");
       }
     } catch (err) {
       console.error(err);
-      alert("Error de conexión al generar recomendaciones.");
+      toast.error("Error de conexión al generar recomendaciones.");
     } finally {
       setLoading(false);
     }
@@ -120,7 +121,7 @@ export default function FormSection() {
           onSubmit={handleSubmit}
           className="grid grid-cols-1 gap-6 lg:grid-cols-12"
         >
-          <Card className="glass-card lg:col-span-8">
+          <Card variant="glass" className="lg:col-span-8">
             <CardHeader>
               <SectionHeading icon={<LayoutGridIcon className="size-5 text-primary" />}>
                 Géneros Favoritos
@@ -154,14 +155,17 @@ export default function FormSection() {
             </CardContent>
           </Card>
 
-          <Card className="glass-card lg:col-span-4">
+          <Card variant="glass" className="lg:col-span-4">
             <CardHeader>
               <SectionHeading icon={<ClockIcon className="size-5 text-primary" />}>
                 Estilo
               </SectionHeading>
             </CardHeader>
             <CardContent className="space-y-4">
-              <Select value={style} onValueChange={setStyle}>
+              <Select
+                value={style}
+                onValueChange={(value) => value && setStyle(value)}
+              >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Estilo de juego" />
                 </SelectTrigger>
@@ -180,7 +184,7 @@ export default function FormSection() {
             </CardContent>
           </Card>
 
-          <Card className="glass-card relative overflow-hidden lg:col-span-12">
+          <Card variant="glass" className="relative overflow-hidden lg:col-span-12">
             <CpuIcon className="pointer-events-none absolute right-0 top-0 size-28 text-primary/10" />
             <CardHeader>
               <SectionHeading icon={<CpuIcon className="size-5 text-primary" />}>
@@ -225,7 +229,10 @@ export default function FormSection() {
                   <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                     Memoria RAM
                   </Label>
-                  <Select value={ram} onValueChange={setRam}>
+                  <Select
+                    value={ram}
+                    onValueChange={(value) => value && setRam(value)}
+                  >
                     <SelectTrigger className="h-11 w-full">
                       <SelectValue />
                     </SelectTrigger>
@@ -243,7 +250,10 @@ export default function FormSection() {
                   <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                     Almacenamiento
                   </Label>
-                  <Select value={storage} onValueChange={setStorage}>
+                  <Select
+                    value={storage}
+                    onValueChange={(value) => value && setStorage(value)}
+                  >
                     <SelectTrigger className="h-11 w-full">
                       <SelectValue />
                     </SelectTrigger>

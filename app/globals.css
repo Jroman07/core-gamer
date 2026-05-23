@@ -168,10 +168,6 @@
   font-family: var(--font-display);
 }
 
-.glass-card {
-  @apply border border-border/80 bg-card/60 backdrop-blur-md;
-}
-
 .btn-gradient {
   @apply bg-gradient-to-br from-[#00daf3] to-[#00626e] text-primary-foreground hover:opacity-90;
 }
