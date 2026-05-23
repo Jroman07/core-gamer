@@ -72,7 +72,7 @@ export default function Navbar() {
           : "border-transparent bg-background/80"
       )}
     >
-      <nav className="mx-auto flex max-w-7xl flex-col items-center gap-4 px-6 py-4 md:flex-row md:justify-between md:px-12">
+      <nav className="mx-auto flex max-w-7xl flex-row items-center justify-between gap-4 px-6 py-4 md:px-12">
         <span className="font-display text-2xl font-bold tracking-tight text-primary">
           COREGAMER
         </span>
