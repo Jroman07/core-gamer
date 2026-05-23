@@ -6,7 +6,8 @@
       "Bash(npx prisma *)",
       "Bash(node *)",
       "Bash(npx tsc *)",
-      "Bash(pnpm add *)"
+      "Bash(pnpm add *)",
+      "Bash(git push *)"
     ]
   }
 }
