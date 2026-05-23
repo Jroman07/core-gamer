@@ -1,6 +1,6 @@
 "use client";
 
-const ANALYSIS_IMG = "https://www.figma.com/api/mcp/asset/355e0816-b716-4042-91e8-5530323f66a7";
+const ANALYSIS_IMG = "https://lh3.googleusercontent.com/aida-public/AB6AXuCI_Me26wAfFhRmJrEjbR6BDRu4oUK7qPnQOvecSIHjXxyVZPj1ix_u5lCwDe5UsXeZJlWN6k0jb1kiohQU15vTbXizJYgroCxV-dTWq_DlAtL9Ji9DMXKAyh6m9BF9iGqCkQaTrU6GpdDPu4CvuzT_SHzGif_fjbdC0pgONbTtcu4dfKqRtsFRBAz0USjKvxM_qD6l3U2IIvqX4_IuELHqVctfmJJI_-JTYees3BptN4qXqKNy6HdgpIjSWxLvOifwYaKSzE6-Z7A";
 
 export default function HeroSection() {
   const scrollToForm = () => {
