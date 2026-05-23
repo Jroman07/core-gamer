@@ -13,8 +13,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Falta configurar API_KEY en .env.local" }, { status: 500 });
     }
 
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-
     const prompt = `
 Eres un experto en videojuegos y hardware de PC.
 El usuario tiene las siguientes especificaciones:
@@ -49,8 +47,51 @@ Reglas adicionales:
 - Para 'compat', sé muy directo sobre el rendimiento esperado. Usa type "green" (Optimizado/Fluido), "yellow" (Bajos FPS/Gráficos mínimos) o "red" (No recomendado/Correrá muy mal). Si no hay specs, usa "yellow" (Hardware Desconocido).
 `;
 
-    const result = await model.generateContent(prompt);
-    const text = result.response.text();
+    // Intentar con múltiples modelos de Gemini y lógica de reintento/fallback ante un error 503 (Servicio no disponible)
+    const modelsToTry = ["gemini-2.5-flash", "gemini-2.5-pro", "gemini-1.5-flash", "gemini-1.5-pro"];
+    let text = "";
+    let lastError: any = null;
+
+    const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+    for (const modelName of modelsToTry) {
+      console.log(`[API Recommend] Intentando generar recomendaciones con el modelo: ${modelName}...`);
+      try {
+        const model = genAI.getGenerativeModel({ model: modelName });
+        
+        let attempts = 0;
+        const maxAttempts = 2;
+        while (attempts < maxAttempts) {
+          try {
+            const result = await model.generateContent(prompt);
+            text = result.response.text();
+            break; // Éxito, salir del bucle de intentos
+          } catch (err: any) {
+            attempts++;
+            lastError = err;
+            console.warn(`[API Recommend] Error con modelo ${modelName} (Intento ${attempts}/${maxAttempts}):`, err.message || err);
+            
+            if (attempts < maxAttempts) {
+              const waitTime = attempts * 1000;
+              console.log(`[API Recommend] Esperando ${waitTime}ms antes del reintento...`);
+              await delay(waitTime);
+            }
+          }
+        }
+        
+        if (text) {
+          console.log(`[API Recommend] Recomendaciones generadas exitosamente usando: ${modelName}`);
+          break; // Éxito, salir del bucle de modelos
+        }
+      } catch (err: any) {
+        lastError = err;
+        console.error(`[API Recommend] Error al inicializar/ejecutar el modelo ${modelName}:`, err);
+      }
+    }
+
+    if (!text) {
+      throw new Error(`Todos los modelos de Gemini fallaron. Último error: ${lastError?.message || String(lastError)}`);
+    }
     
     // Mejorar la extracción del JSON buscando los corchetes del arreglo
     const jsonMatch = text.match(/\[[\s\S]*\]/);
