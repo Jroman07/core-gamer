@@ -1,6 +1,11 @@
 "use client";
 
-const ANALYSIS_IMG = "https://lh3.googleusercontent.com/aida-public/AB6AXuCI_Me26wAfFhRmJrEjbR6BDRu4oUK7qPnQOvecSIHjXxyVZPj1ix_u5lCwDe5UsXeZJlWN6k0jb1kiohQU15vTbXizJYgroCxV-dTWq_DlAtL9Ji9DMXKAyh6m9BF9iGqCkQaTrU6GpdDPu4CvuzT_SHzGif_fjbdC0pgONbTtcu4dfKqRtsFRBAz0USjKvxM_qD6l3U2IIvqX4_IuELHqVctfmJJI_-JTYees3BptN4qXqKNy6HdgpIjSWxLvOifwYaKSzE6-Z7A";
+import { ArrowDownIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+
+const ANALYSIS_IMG =
+  "https://lh3.googleusercontent.com/aida-public/AB6AXuCI_Me26wAfFhRmJrEjbR6BDRu4oUK7qPnQOvecSIHjXxyVZPj1ix_u5lCwDe5UsXeZJlWN6k0jb1kiohQU15vTbXizJYgroCxV-dTWq_DlAtL9Ji9DMXKAyh6m9BF9iGqCkQaTrU6GpdDPu4CvuzT_SHzGif_fjbdC0pgONbTtcu4dfKqRtsFRBAz0USjKvxM_qD6l3U2IIvqX4_IuELHqVctfmJJI_-JTYees3BptN4qXqKNy6HdgpIjSWxLvOifwYaKSzE6-Z7A";
 
 export default function HeroSection() {
   const scrollToForm = () => {
@@ -10,124 +15,57 @@ export default function HeroSection() {
   return (
     <section
       id="hero"
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        padding: "113px 48px 80px",
-        position: "relative",
-        overflow: "hidden",
-        gap: 48,
-        flexWrap: "wrap",
-      }}
+      className="relative flex min-h-screen flex-col items-center justify-between gap-10 overflow-hidden px-6 pb-20 pt-28 md:gap-12 md:px-12 md:pt-32 lg:flex-row lg:gap-12"
     >
-      {/* Background glow */}
-      <div style={{
-        position: "absolute", top: -96, right: -96,
-        width: 384, height: 384, borderRadius: 12,
-        background: "rgba(195,245,255,0.1)",
-        filter: "blur(60px)", pointerEvents: "none",
-      }} />
+      <div className="pointer-events-none absolute -right-24 -top-24 size-96 rounded-xl bg-primary/10 blur-3xl" />
 
-      {/* Left content */}
-      <div className="animate-fade-up" style={{ maxWidth: 568, display: "flex", flexDirection: "column", gap: 24, flex: "1 1 400px" }}>
-        <h1
-          style={{
-            fontFamily: "var(--font-display)", fontWeight: 700,
-            fontSize: "clamp(56px, 7vw, 88px)", lineHeight: 0.95,
-            letterSpacing: -4.8, color: "var(--text-primary)",
-          }}
-        >
-          Encuentra<br />
-          los mejores<br />
-          <span style={{ color: "var(--accent)" }}>juegos</span> para<br />
+      <div className="animate-fade-up flex w-full flex-col gap-6 lg:max-w-xl lg:flex-1">
+        <h1 className="font-display text-[clamp(3.5rem,7vw,5.5rem)] font-bold leading-[0.95] tracking-[-0.05em] text-foreground">
+          Encuentra
+          <br />
+          los mejores
+          <br />
+          <span className="text-primary">juegos</span> para
+          <br />
           tu PC
         </h1>
 
-        <p className="animate-fade-up delay-200" style={{
-          fontSize: 20, lineHeight: 1.4, fontWeight: 300,
-          color: "var(--text-muted)",
-        }}>
-          Nuestro motor de IA analiza tus especificaciones técnicas y patrones de juego
-          para entregarte recomendaciones precisas que realmente corren en tu máquina.
+        <p className="animate-fade-up delay-200 max-w-lg text-lg font-light leading-relaxed text-muted-foreground">
+          Nuestro motor de IA analiza tus especificaciones técnicas y patrones de
+          juego para entregarte recomendaciones precisas que realmente corren en
+          tu máquina.
         </p>
 
-        <div className="animate-fade-up delay-300" style={{ paddingTop: 16 }}>
-          <button
-            onClick={scrollToForm}
-            style={{
-              display: "inline-flex", alignItems: "center", gap: 8,
-              padding: "16px 32px", borderRadius: 6, border: "none", cursor: "pointer",
-              background: "linear-gradient(136deg, #00daf3 0%, #00626e 100%)",
-              fontFamily: "var(--font-display)", fontWeight: 700,
-              fontSize: 16, letterSpacing: 1.6, textTransform: "uppercase",
-              color: "var(--accent-dark)", transition: "opacity 0.2s, transform 0.2s",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.opacity = "0.85";
-              e.currentTarget.style.transform = "translateY(-2px)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.opacity = "1";
-              e.currentTarget.style.transform = "translateY(0)";
-            }}
-          >
+        <div className="animate-fade-up delay-300 pt-2">
+          <Button variant="gradient" size="lg" onClick={scrollToForm}>
             Comenzar
-            <svg width="12" height="15" viewBox="0 0 12 15" fill="none">
-              <path d="M6 1v13M1 9l5 5 5-5" stroke="#00626e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
+            <ArrowDownIcon className="size-4" />
+          </Button>
         </div>
       </div>
 
-      {/* Right visual */}
-      <div className="animate-fade-in delay-400" style={{ flex: "1 1 400px", maxWidth: 590 }}>
-        <div style={{
-          background: "rgba(53,52,55,0.4)",
-          border: "1px solid rgba(132,147,150,0.15)",
-          borderRadius: 8, padding: 17,
-          backdropFilter: "blur(6px)",
-          transform: "rotate(2deg)",
-          position: "relative", overflow: "hidden",
-          transition: "transform 0.4s ease",
-        }}
-          onMouseEnter={(e) => { e.currentTarget.style.transform = "rotate(0deg)"; }}
-          onMouseLeave={(e) => { e.currentTarget.style.transform = "rotate(2deg)"; }}
-        >
-          <img
-            src={ANALYSIS_IMG}
-            alt="Game Analysis Visual"
-            style={{ width: "100%", aspectRatio: "1", borderRadius: 4, display: "block", opacity: 0.8, objectFit: "cover" }}
-          />
-          {/* Gradient overlay */}
-          <div style={{
-            position: "absolute", inset: 0,
-            background: "linear-gradient(to top, #131315 0%, rgba(19,19,21,0) 50%)",
-            pointerEvents: "none",
-          }} />
-          {/* HUD Badge */}
-          <div style={{
-            position: "absolute", bottom: 24, left: 24,
-            background: "rgba(53,52,55,0.4)",
-            border: "1px solid rgba(132,147,150,0.15)",
-            borderRadius: 4, backdropFilter: "blur(6px)",
-            padding: "16px 17px",
-            display: "flex", alignItems: "center", gap: 12,
-          }}>
-            <div style={{ background: "#c3f5ff", width: 8, height: 32, borderRadius: 12, flexShrink: 0 }} />
-            <div>
-              <div style={{
-                fontFamily: "var(--font-body)", fontWeight: 700, fontSize: 10,
-                letterSpacing: 1, textTransform: "uppercase", color: "#c3f5ff", marginBottom: 4,
-              }}>Matching Accuracy</div>
-              <div style={{
-                fontFamily: "var(--font-display)", fontWeight: 700,
-                fontSize: 20, color: "var(--text-primary)",
-              }}>98.4%</div>
+      <div className="animate-fade-in delay-400 w-full lg:max-w-[590px] lg:flex-1">
+        <Card className="glass-card group relative rotate-2 overflow-hidden py-0 transition-transform duration-300 hover:rotate-0">
+          <CardContent className="p-4">
+            <img
+              src={ANALYSIS_IMG}
+              alt="Game Analysis Visual"
+              className="aspect-square w-full rounded-md object-cover opacity-80"
+            />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
+            <div className="absolute bottom-6 left-6 flex items-center gap-3 rounded-md border border-border/80 bg-card/60 p-4 backdrop-blur-md">
+              <div className="h-8 w-2 shrink-0 rounded-full bg-primary" />
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-primary">
+                  Matching Accuracy
+                </p>
+                <p className="font-display text-xl font-bold text-foreground">
+                  98.4%
+                </p>
+              </div>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
     </section>
   );

@@ -1,8 +1,27 @@
 "use client";
-import { useState, useEffect } from "react";
+
+import { useEffect, useState } from "react";
+import { MenuIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { cn } from "@/lib/utils";
+
+const NAV_ITEMS = [
+  { label: "Home", id: "hero" },
+  { label: "Recomendaciones", id: "form" },
+  { label: "Explorar", id: "results" },
+];
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
+  const [activeId, setActiveId] = useState("hero");
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -11,58 +30,82 @@ export default function Navbar() {
   }, []);
 
   const scrollTo = (id: string) => {
+    setActiveId(id);
+    setOpen(false);
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
 
-  return (
-    <nav
-      style={{
-        position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "16px 48px",
-        background: scrolled ? "rgba(19,19,21,0.95)" : "rgba(19,19,21,0.8)",
-        backdropFilter: "blur(12px)",
-        boxShadow: "0 20px 40px rgba(0,229,255,0.06)",
-        borderBottom: "1px solid rgba(0,229,255,0.06)",
-        transition: "background 0.3s",
-      }}
-    >
-      <span style={{
-        fontFamily: "var(--font-display)", fontWeight: 700,
-        fontSize: 24, letterSpacing: -1.2, color: "var(--accent)",
-      }}>
-        COREGAMER
-      </span>
-
-      <div style={{ display: "flex", gap: 32, alignItems: "center" }}>
-        {[
-          { label: "Home", id: "hero" },
-          { label: "Recomendaciones", id: "form" },
-          { label: "Explorar", id: "results" },
-        ].map((item) => (
-          <button
-            key={item.id}
-            onClick={() => scrollTo(item.id)}
-            style={{
-              background: "none", border: "none", cursor: "pointer",
-              fontFamily: "var(--font-display)", fontWeight: 700,
-              fontSize: 14, letterSpacing: -0.7, textTransform: "uppercase",
-              color: item.id === "hero" ? "var(--accent)" : "var(--text-primary)",
-              borderBottom: item.id === "hero" ? "2px solid var(--accent)" : "2px solid transparent",
-              paddingBottom: 6, transition: "color 0.2s, border-color 0.2s",
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.color = "var(--accent)";
-            }}
-            onMouseLeave={(e) => {
-              if (item.id !== "hero")
-                (e.currentTarget as HTMLButtonElement).style.color = "var(--text-primary)";
-            }}
+  const NavLinks = ({ mobile = false }: { mobile?: boolean }) => (
+    <>
+      {NAV_ITEMS.map((item) => (
+        <Button
+          key={item.id}
+          variant="ghost"
+          onClick={() => scrollTo(item.id)}
+          className={cn(
+            "font-display text-sm font-bold uppercase tracking-tight",
+            mobile ? "h-11 w-full justify-start text-base" : "h-auto px-0 py-1.5",
+            activeId === item.id
+              ? "text-primary"
+              : "text-foreground hover:text-primary"
+          )}
+        >
+          <span
+            className={cn(
+              "border-b-2 pb-1",
+              activeId === item.id ? "border-primary" : "border-transparent"
+            )}
           >
             {item.label}
-          </button>
-        ))}
-      </div>
-    </nav>
+          </span>
+        </Button>
+      ))}
+    </>
+  );
+
+  return (
+    <header
+      className={cn(
+        "fixed inset-x-0 top-0 z-50 border-b backdrop-blur-xl transition-colors",
+        scrolled
+          ? "border-primary/10 bg-background/95 shadow-[0_20px_40px_rgba(0,229,255,0.06)]"
+          : "border-transparent bg-background/80"
+      )}
+    >
+      <nav className="mx-auto flex max-w-7xl flex-col items-center gap-4 px-6 py-4 md:flex-row md:justify-between md:px-12">
+        <span className="font-display text-2xl font-bold tracking-tight text-primary">
+          COREGAMER
+        </span>
+
+        <div className="hidden items-center gap-8 md:flex">
+          <NavLinks />
+        </div>
+
+        <Sheet open={open} onOpenChange={setOpen}>
+          <SheetTrigger
+            render={
+              <Button
+                variant="outline"
+                size="icon"
+                className="md:hidden"
+                aria-label="Abrir menú"
+              />
+            }
+          >
+            <MenuIcon />
+          </SheetTrigger>
+          <SheetContent side="right" className="w-full max-w-xs border-border bg-background">
+            <SheetHeader>
+              <SheetTitle className="font-display text-left text-primary">
+                Menú
+              </SheetTitle>
+            </SheetHeader>
+            <div className="flex flex-col gap-2 px-4">
+              <NavLinks mobile />
+            </div>
+          </SheetContent>
+        </Sheet>
+      </nav>
+    </header>
   );
 }

@@ -1,13 +1,20 @@
 "use client";
+
 import { useState } from "react";
+import { LayoutGridIcon, ListIcon } from "lucide-react";
 import GameCard from "./GameCard";
 import { useGameContext } from "../context/GameContext";
+import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { cn } from "@/lib/utils";
 
 const GAMES = [
   {
     name: "Cyber Odyssey",
     genre: "Open World / RPG",
-    description: "Explora un mundo distópico donde tus decisiones alteran el destino de civilizaciones enteras.",
+    description:
+      "Explora un mundo distópico donde tus decisiones alteran el destino de civilizaciones enteras.",
     url: "https://www.cyberpunk.net",
     badges: [
       { label: "IA Match", type: "ia" as const },
@@ -18,7 +25,8 @@ const GAMES = [
   {
     name: "Neon Strike",
     genre: "Tactical Shooter",
-    description: "Combate 5v5 de alta precisión. Tu hardware actual garantiza 144fps estables en todo momento.",
+    description:
+      "Combate 5v5 de alta precisión. Tu hardware actual garantiza 144fps estables en todo momento.",
     url: "https://playvalorant.com",
     badges: [{ label: "IA Match", type: "ia" as const }],
     compat: { label: "Optimizado", type: "green" as const },
@@ -26,7 +34,8 @@ const GAMES = [
   {
     name: "Void Horizon",
     genre: "Space / Simulation",
-    description: "Una experiencia de simulación espacial sin límites. Requiere tu SSD para carga instantánea.",
+    description:
+      "Una experiencia de simulación espacial sin límites. Requiere tu SSD para carga instantánea.",
     url: "https://store.steampowered.com/app/359320/Elite_Dangerous/",
     badges: [{ label: "Destacado", type: "dest" as const }],
     compat: { label: "Requiere SSD", type: "yellow" as const },
@@ -34,7 +43,8 @@ const GAMES = [
   {
     name: "Ember Souls",
     genre: "Action / Adventure",
-    description: "Desafía a dioses antiguos en este soul-like visualmente impresionante con mecánicas únicas.",
+    description:
+      "Desafía a dioses antiguos en este soul-like visualmente impresionante con mecánicas únicas.",
     url: "https://store.steampowered.com/app/1245620/ELDEN_RING/",
     badges: [{ label: "IA Match", type: "ia" as const }],
     compat: { label: "Compatible", type: "green" as const },
@@ -48,92 +58,62 @@ export default function ResultsSection() {
   const displayGames = games.length > 0 ? games : GAMES;
 
   return (
-    <section id="results" style={{ padding: "96px 48px", maxWidth: 1280, margin: "0 auto" }}>
-      {/* Header */}
-      <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: 48 }}>
+    <section id="results" className="mx-auto max-w-7xl px-4 py-16 md:px-12 md:py-24">
+      <div className="mb-10 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between md:mb-12">
         <div>
-          <div style={{
-            fontFamily: "var(--font-display)", fontWeight: 700,
-            fontSize: 14, letterSpacing: 1.4, textTransform: "uppercase",
-            color: "var(--gold)", marginBottom: 4,
-          }}>Resultados Filtrados</div>
-          <div style={{
-            fontFamily: "var(--font-display)", fontWeight: 700,
-            fontSize: 48, letterSpacing: -2.4, color: "var(--text-primary)",
-          }}>Sugerencias para ti</div>
+          <p className="mb-1 font-display text-sm font-bold uppercase tracking-widest text-gold">
+            Resultados Filtrados
+          </p>
+          <h2 className="font-display text-3xl font-bold tracking-tight text-foreground md:text-5xl">
+            Sugerencias para ti
+          </h2>
         </div>
 
-        {/* View toggle */}
-        <div style={{ display: "flex", gap: 8 }}>
-          {(["grid", "list"] as const).map((v) => (
-            <button
-              key={v}
-              onClick={() => setView(v)}
-              style={{
-                width: 36, height: 36,
-                background: v === view ? "rgba(0,229,255,0.1)" : "#201f21",
-                border: `1px solid ${v === view ? "var(--accent)" : "rgba(132,147,150,0.15)"}`,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                cursor: "pointer", transition: "all 0.2s",
-              }}
-            >
-              {v === "grid" ? (
-                <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                  <rect x="1" y="1" width="6" height="6" stroke={v === view ? "#00e5ff" : "#849396"} strokeWidth="1.5" />
-                  <rect x="11" y="1" width="6" height="6" stroke={v === view ? "#00e5ff" : "#849396"} strokeWidth="1.5" />
-                  <rect x="1" y="11" width="6" height="6" stroke={v === view ? "#00e5ff" : "#849396"} strokeWidth="1.5" />
-                  <rect x="11" y="11" width="6" height="6" stroke={v === view ? "#00e5ff" : "#849396"} strokeWidth="1.5" />
-                </svg>
-              ) : (
-                <svg width="20" height="16" viewBox="0 0 20 16" fill="none">
-                  <path d="M1 1h18M1 8h18M1 15h18" stroke={v === view ? "#00e5ff" : "#849396"} strokeWidth="1.5" strokeLinecap="round" />
-                </svg>
-              )}
-            </button>
-          ))}
-        </div>
+        <ToggleGroup
+          value={[view]}
+          onValueChange={(value) => {
+            const next = value[value.length - 1];
+            if (next === "grid" || next === "list") setView(next);
+          }}
+          variant="outline"
+          spacing={0}
+          className="self-start sm:self-auto"
+        >
+          <ToggleGroupItem value="grid" aria-label="Vista en cuadrícula">
+            <LayoutGridIcon className="size-4" />
+          </ToggleGroupItem>
+          <ToggleGroupItem value="list" aria-label="Vista en lista">
+            <ListIcon className="size-4" />
+          </ToggleGroupItem>
+        </ToggleGroup>
       </div>
 
-      {/* Cards */}
       {loading ? (
-        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: 300, color: "var(--accent)", fontSize: 24, fontFamily: "var(--font-display)", fontWeight: 700 }}>
-          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" style={{ animation: "spin 1s linear infinite", marginRight: 16 }}>
-            <circle cx="20" cy="20" r="18" stroke="rgba(0, 229, 255, 0.2)" strokeWidth="4" />
-            <path d="M38 20c0-9.941-8.059-18-18-18" stroke="#00e5ff" strokeWidth="4" strokeLinecap="round" />
-            <style>{`@keyframes spin { 100% { transform: rotate(360deg); } }`}</style>
-          </svg>
-          Analizando tu perfil...
+        <div className="flex min-h-[200px] flex-col items-center justify-center gap-4 text-center md:min-h-[300px] md:flex-row md:text-left">
+          <Spinner className="size-10 text-primary" />
+          <p className="font-display text-2xl font-bold text-primary">
+            Analizando tu perfil...
+          </p>
         </div>
       ) : (
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: view === "grid" ? "repeat(4, 1fr)" : "1fr",
-          gap: 32,
-          marginBottom: 48,
-        }}>
+        <div
+          className={cn(
+            "mb-10 md:mb-12",
+            view === "grid"
+              ? "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 md:gap-8"
+              : "flex flex-col gap-6 md:gap-8"
+          )}
+        >
           {displayGames.map((game, i) => (
-            <GameCard key={game.name + i} {...game as any} />
+            <GameCard key={game.name + i} {...(game as typeof GAMES[number])} />
           ))}
         </div>
       )}
 
-      {/* Load more */}
-      <div style={{ display: "flex", justifyContent: "center" }}>
-        <button
-          style={{
-            padding: "17px 41px", borderRadius: 6,
-            background: "#353437",
-            border: "1px solid rgba(132,147,150,0.15)",
-            cursor: "pointer",
-            fontFamily: "var(--font-display)", fontWeight: 700,
-            fontSize: 16, letterSpacing: 1.6, textTransform: "uppercase",
-            color: "var(--text-primary)", transition: "border-color 0.2s, color 0.2s",
-          }}
-          onMouseEnter={(e) => { e.currentTarget.style.borderColor = "var(--accent)"; e.currentTarget.style.color = "var(--accent)"; }}
-          onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(132,147,150,0.15)"; e.currentTarget.style.color = "var(--text-primary)"; }}
-        >
+      <div className="flex justify-center">
+        <Button variant="outline" size="lg" className="font-display uppercase tracking-widest">
           Cargar más juegos
-        </button>
+        </Button>
       </div>
     </section>
   );

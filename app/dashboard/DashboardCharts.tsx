@@ -1,9 +1,26 @@
 "use client";
-import React from 'react';
+
 import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
-  PieChart, Pie, Cell, Legend
-} from 'recharts';
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Legend,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 
 interface ChartProps {
   totalClicks: number;
@@ -11,77 +28,136 @@ interface ChartProps {
   genreData: { name: string; value: number }[];
 }
 
-const COLORS = ['#00e5ff', '#849396', '#00b3cc', '#ff4d4d', '#e9c349'];
+const COLORS = [
+  "var(--chart-1)",
+  "var(--chart-2)",
+  "var(--chart-3)",
+  "var(--chart-4)",
+  "var(--chart-5)",
+];
 
-export default function DashboardCharts({ totalClicks, gameData, genreData }: ChartProps) {
+export default function DashboardCharts({
+  totalClicks,
+  gameData,
+  genreData,
+}: ChartProps) {
   return (
-    <div style={{ padding: '40px 20px', maxWidth: '1200px', margin: '0 auto', fontFamily: 'var(--font-body)' }}>
-      <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '32px', color: 'var(--text-primary)', marginBottom: '8px' }}>
-        Estadísticas de Recomendaciones
-      </h1>
-      <p style={{ color: 'var(--text-muted)', marginBottom: '32px', fontSize: '18px' }}>
-        Total de interacciones registradas: <strong style={{ color: 'var(--accent)' }}>{totalClicks}</strong>
-      </p>
+    <div className="mx-auto max-w-6xl px-4 py-8 md:px-5 md:py-10">
+      <div className="mb-8">
+        <h1 className="font-display text-2xl font-bold text-foreground md:text-3xl">
+          Estadísticas de Recomendaciones
+        </h1>
+        <p className="mt-2 text-base text-muted-foreground md:text-lg">
+          Total de interacciones registradas:{" "}
+          <strong className="text-primary">{totalClicks}</strong>
+        </p>
+      </div>
 
       {totalClicks === 0 ? (
-        <div style={{ padding: '40px', textAlign: 'center', background: 'var(--bg-secondary)', borderRadius: '12px', border: '1px solid rgba(132,147,150,0.15)' }}>
-          <p style={{ color: 'var(--text-dim)', fontSize: '16px' }}>Todavía no hay datos. Haz clic en algunas tarjetas de juegos para generar estadísticas.</p>
-        </div>
+        <Card className="glass-card">
+          <CardContent className="py-10 text-center">
+            <p className="text-muted-foreground">
+              Todavía no hay datos. Haz clic en algunas tarjetas de juegos para
+              generar estadísticas.
+            </p>
+          </CardContent>
+        </Card>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '32px' }}>
-          {/* Gráfico de Barras: Top Juegos */}
-          <div style={{ background: 'var(--bg-secondary)', padding: '24px', borderRadius: '12px', border: '1px solid rgba(132,147,150,0.15)' }}>
-            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', color: 'var(--text-primary)', marginBottom: '20px' }}>
-              Juegos Más Populares (Top 5)
-            </h2>
-            <div style={{ height: 300, width: '100%' }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={gameData} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(132,147,150,0.1)" vertical={false} />
-                  <XAxis dataKey="name" tick={{ fill: 'var(--text-dim)', fontSize: 12 }} />
-                  <YAxis tick={{ fill: 'var(--text-dim)', fontSize: 12 }} />
-                  <Tooltip 
-                    cursor={{ fill: 'rgba(0, 229, 255, 0.1)' }}
-                    contentStyle={{ backgroundColor: 'var(--bg-tertiary)', border: '1px solid rgba(0, 229, 255, 0.3)', borderRadius: '8px', color: 'var(--text-primary)' }}
-                    itemStyle={{ color: 'var(--accent)', fontWeight: 700 }}
-                  />
-                  <Bar dataKey="clicks" fill="var(--accent)" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
-          {/* Gráfico Circular: Distribución de Géneros */}
-          <div style={{ background: 'var(--bg-secondary)', padding: '24px', borderRadius: '12px', border: '1px solid rgba(132,147,150,0.15)' }}>
-            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', color: 'var(--text-primary)', marginBottom: '20px' }}>
-              Distribución por Géneros
-            </h2>
-            <div style={{ height: 300, width: '100%' }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={genreData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={100}
-                    paddingAngle={5}
-                    dataKey="value"
-                    labelLine={false}
+        <div className="flex flex-col gap-8 lg:grid lg:grid-cols-2">
+          <Card className="glass-card">
+            <CardHeader>
+              <CardTitle className="font-display">
+                Juegos Más Populares (Top 5)
+              </CardTitle>
+              <CardDescription>Clics por título recomendado</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[300px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={gameData}
+                    margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
                   >
-                    {genreData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: 'var(--bg-tertiary)', border: '1px solid rgba(0, 229, 255, 0.3)', borderRadius: '8px', color: 'var(--text-primary)' }}
-                    itemStyle={{ color: 'var(--text-primary)' }}
-                  />
-                  <Legend wrapperStyle={{ color: 'var(--text-dim)', fontSize: 14 }} />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="rgba(132,147,150,0.1)"
+                      vertical={false}
+                    />
+                    <XAxis
+                      dataKey="name"
+                      tick={{ fill: "var(--muted-foreground)", fontSize: 12 }}
+                    />
+                    <YAxis
+                      tick={{ fill: "var(--muted-foreground)", fontSize: 12 }}
+                    />
+                    <Tooltip
+                      cursor={{ fill: "rgba(0, 229, 255, 0.1)" }}
+                      contentStyle={{
+                        backgroundColor: "var(--card)",
+                        border: "1px solid rgba(0, 229, 255, 0.3)",
+                        borderRadius: "8px",
+                        color: "var(--foreground)",
+                      }}
+                      itemStyle={{ color: "var(--primary)", fontWeight: 700 }}
+                    />
+                    <Bar
+                      dataKey="clicks"
+                      fill="var(--primary)"
+                      radius={[4, 4, 0, 0]}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="glass-card">
+            <CardHeader>
+              <CardTitle className="font-display">
+                Distribución por Géneros
+              </CardTitle>
+              <CardDescription>Preferencias de los usuarios</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[300px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={genreData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={100}
+                      paddingAngle={5}
+                      dataKey="value"
+                      labelLine={false}
+                    >
+                      {genreData.map((entry, index) => (
+                        <Cell
+                          key={entry.name}
+                          fill={COLORS[index % COLORS.length]}
+                        />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: "var(--card)",
+                        border: "1px solid rgba(0, 229, 255, 0.3)",
+                        borderRadius: "8px",
+                        color: "var(--foreground)",
+                      }}
+                    />
+                    <Legend
+                      wrapperStyle={{
+                        color: "var(--muted-foreground)",
+                        fontSize: 14,
+                      }}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       )}
     </div>
