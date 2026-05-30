@@ -1,6 +1,6 @@
 "use client";
 
-import { ExternalLinkIcon, StarIcon, GaugeIcon } from "lucide-react";
+import { ExternalLinkIcon, StarIcon, GaugeIcon, SparklesIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -21,6 +21,7 @@ interface GameCardProps {
   name: string;
   genre: string;
   description: string;
+  reason?: string;
   url?: string;
   badges: BadgeItem[];
   compat: { label: string; type: "green" | "yellow" | "red" };
@@ -52,6 +53,7 @@ export default function GameCard({
   name,
   genre,
   description,
+  reason,
   url,
   badges,
   compat,
@@ -147,10 +149,20 @@ export default function GameCard({
           </CardDescription>
         </CardHeader>
 
-        <CardContent>
+        <CardContent className="space-y-3">
           <p className="line-clamp-2 text-sm leading-relaxed text-muted-foreground">
             {description}
           </p>
+
+          {reason && (
+            <div className="flex items-start gap-2 rounded-md border border-primary/20 bg-primary/5 p-2.5">
+              <SparklesIcon className="mt-0.5 size-3.5 shrink-0 text-primary" />
+              <p className="text-xs leading-relaxed text-foreground/90">
+                <span className="font-bold text-primary">Por qué para ti: </span>
+                {reason}
+              </p>
+            </div>
+          )}
         </CardContent>
 
         <CardFooter className="mt-auto flex-col items-start gap-3 border-t border-border/60 bg-muted/20 py-4">

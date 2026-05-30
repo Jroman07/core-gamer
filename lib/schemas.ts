@@ -9,9 +9,30 @@ export const recommendRequestSchema = z.object({
   gpu: z.string().max(120).optional().default(""),
   ram: z.string().max(40).optional().default(""),
   storage: z.string().max(40).optional().default(""),
+  // Estado de animo opcional ("estresado", "con adrenalina"...) para afinar el tono.
+  mood: z.string().max(60).optional().default(""),
 });
 
 export type RecommendRequest = z.infer<typeof recommendRequestSchema>;
+
+/** Validacion del chat de seguimiento (/api/refine). */
+export const refineRequestSchema = z.object({
+  context: recommendRequestSchema, // perfil original del usuario
+  previousGames: z.array(z.string().max(200)).max(8).default([]),
+  message: z.string().min(1).max(300), // peticion: "mas baratos", "menos violentos"...
+});
+
+export type RefineRequest = z.infer<typeof refineRequestSchema>;
+
+/** Validacion del asesor de upgrade (/api/upgrade). */
+export const upgradeRequestSchema = z.object({
+  cpu: z.string().max(120).optional().default(""),
+  gpu: z.string().max(120).optional().default(""),
+  ram: z.string().max(40).optional().default(""),
+  budget: z.number().min(50).max(5000),
+});
+
+export type UpgradeRequest = z.infer<typeof upgradeRequestSchema>;
 
 /** Validacion del body de /api/track. */
 export const trackRequestSchema = z.object({
@@ -33,6 +54,8 @@ export const geminiResponseSchema: ResponseSchema = {
       name: { type: SchemaType.STRING },
       genre: { type: SchemaType.STRING },
       description: { type: SchemaType.STRING },
+      // "Por que este juego": match personalizado con el perfil/PC del usuario.
+      reason: { type: SchemaType.STRING },
       url: { type: SchemaType.STRING },
       demand: {
         type: SchemaType.NUMBER,
@@ -49,6 +72,34 @@ export const geminiResponseSchema: ResponseSchema = {
         },
       },
     },
-    required: ["name", "genre", "description", "url", "demand", "badges"],
+    required: ["name", "genre", "description", "reason", "url", "demand", "badges"],
   },
+};
+
+/**
+ * Schema del asesor de upgrade: la IA propone componentes a comprar dentro del
+ * presupuesto y explica el beneficio. El PcScore nuevo lo recalculamos NOSOTROS.
+ */
+export const geminiUpgradeSchema: ResponseSchema = {
+  type: SchemaType.OBJECT,
+  properties: {
+    summary: { type: SchemaType.STRING }, // resumen en 1-2 frases
+    newCpu: { type: SchemaType.STRING }, // "" si no se cambia
+    newGpu: { type: SchemaType.STRING },
+    newRam: { type: SchemaType.STRING },
+    items: {
+      type: SchemaType.ARRAY,
+      items: {
+        type: SchemaType.OBJECT,
+        properties: {
+          part: { type: SchemaType.STRING }, // "GPU" | "CPU" | "RAM"
+          model: { type: SchemaType.STRING },
+          price: { type: SchemaType.NUMBER }, // USD aprox
+          why: { type: SchemaType.STRING },
+        },
+        required: ["part", "model", "price", "why"],
+      },
+    },
+  },
+  required: ["summary", "newCpu", "newGpu", "newRam", "items"],
 };

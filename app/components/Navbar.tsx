@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { MenuIcon } from "lucide-react";
+import Link from "next/link";
+import { MenuIcon, GamepadIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -32,7 +33,13 @@ export default function Navbar() {
   const scrollTo = (id: string) => {
     setActiveId(id);
     setOpen(false);
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    } else {
+      // Estamos en otra ruta: vamos a la home apuntando a la sección.
+      window.location.assign(`/#${id}`);
+    }
   };
 
   const NavLinks = ({ mobile = false }: { mobile?: boolean }) => (
@@ -60,6 +67,17 @@ export default function Navbar() {
           </span>
         </Button>
       ))}
+      <Link
+        href="/herramientas"
+        onClick={() => setOpen(false)}
+        className={cn(
+          "inline-flex items-center gap-1.5 font-display text-sm font-bold uppercase tracking-tight text-primary hover:text-primary/80",
+          mobile ? "h-11 w-full justify-start text-base" : "py-1.5"
+        )}
+      >
+        <GamepadIcon className="size-4" />
+        Herramientas
+      </Link>
     </>
   );
 
@@ -73,9 +91,12 @@ export default function Navbar() {
       )}
     >
       <nav className="mx-auto flex max-w-7xl flex-row items-center justify-between gap-4 px-6 py-4 md:px-12">
-        <span className="font-display text-2xl font-bold tracking-tight text-primary">
+        <Link
+          href="/"
+          className="font-display text-2xl font-bold tracking-tight text-primary"
+        >
           COREGAMER
-        </span>
+        </Link>
 
         <div className="hidden items-center gap-8 md:flex">
           <NavLinks />

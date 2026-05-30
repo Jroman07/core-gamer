@@ -1,16 +1,18 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import {
   ArrowRightIcon,
   ClockIcon,
   CpuIcon,
+  GamepadIcon,
   LayoutGridIcon,
+  SmileIcon,
 } from "lucide-react";
 import { useGameContext } from "../context/GameContext";
 import PcScanner from "./PcScanner";
 import PcScoreMeter from "./PcScoreMeter";
-import PcArcade from "./PcArcade";
 import { computePcScore } from "@/lib/gpuBenchmarks";
 import { guessCpuLabel } from "@/lib/hardware";
 import { Button } from "@/components/ui/button";
@@ -43,6 +45,14 @@ const genres = [
 const playStyles = ["Competitivo", "Casual", "Cooperativo", "Historia", "Sandbox"];
 const ramOptions = ["8 GB", "16 GB", "32 GB", "64 GB"];
 const storageOptions = ["SSD NVMe", "SSD SATA", "HDD", "SSD + HDD"];
+const moods = [
+  { value: "none", label: "Sin preferencia", emoji: "🎮" },
+  { value: "estresado, quiero relajarme", label: "Estresado / relajar", emoji: "😮‍💨" },
+  { value: "con adrenalina, quiero acción", label: "Con adrenalina", emoji: "🔥" },
+  { value: "nostálgico, quiero clásicos", label: "Nostálgico", emoji: "🕹️" },
+  { value: "social, para jugar con amigos", label: "Social / con amigos", emoji: "🧑‍🤝‍🧑" },
+  { value: "concentrado, quiero un reto", label: "Quiero un reto", emoji: "🧠" },
+];
 
 function SectionHeading({
   icon,
@@ -65,12 +75,14 @@ export default function FormSection() {
     "Open World",
   ]);
   const [style, setStyle] = useState("Competitivo");
+  const [mood, setMood] = useState("");
   const [cpu, setCpu] = useState("");
   const [gpu, setGpu] = useState("");
   const [ram, setRam] = useState("16 GB");
   const [storage, setStorage] = useState("SSD NVMe");
 
-  const { setGames, loading, setLoading, setPcScore } = useGameContext();
+  const { setGames, loading, setLoading, setPcScore, setLastContext } =
+    useGameContext();
 
   // PC Score en vivo: se recalcula al cambiar cualquier spec.
   const livePcScore = useMemo(
@@ -88,6 +100,7 @@ export default function FormSection() {
       const p = JSON.parse(saved);
       if (Array.isArray(p.selectedGenres)) setSelectedGenres(p.selectedGenres);
       if (p.style) setStyle(p.style);
+      if (typeof p.mood === "string") setMood(p.mood);
       if (typeof p.cpu === "string") setCpu(p.cpu);
       if (typeof p.gpu === "string") setGpu(p.gpu);
       if (p.ram) setRam(p.ram);
@@ -102,12 +115,12 @@ export default function FormSection() {
     try {
       localStorage.setItem(
         "coregamer:profile",
-        JSON.stringify({ selectedGenres, style, cpu, gpu, ram, storage })
+        JSON.stringify({ selectedGenres, style, mood, cpu, gpu, ram, storage })
       );
     } catch {
       /* noop */
     }
-  }, [selectedGenres, style, cpu, gpu, ram, storage]);
+  }, [selectedGenres, style, mood, cpu, gpu, ram, storage]);
 
   const handleDetected = (hw: {
     gpu: string;
@@ -137,7 +150,9 @@ export default function FormSection() {
       document.getElementById("results")?.scrollIntoView({ behavior: "smooth" });
     }, 0);
 
-    const formData = { selectedGenres, style, cpu, gpu, ram, storage };
+    const formData = { selectedGenres, style, mood, cpu, gpu, ram, storage };
+    // Guardamos el contexto para que el chat de seguimiento pueda afinar.
+    setLastContext(formData);
 
     try {
       const res = await fetch("/api/recommend", {
@@ -231,10 +246,33 @@ export default function FormSection() {
                   ))}
                 </SelectContent>
               </Select>
-              <p className="flex items-center gap-2 px-1 text-xs text-muted-foreground">
-                <span className="size-2.5 rounded-full border border-muted-foreground" />
-                Ajusta la dificultad sugerida
-              </p>
+
+              <div className="space-y-2">
+                <Label className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                  <SmileIcon className="size-3.5 text-primary" />
+                  ¿Cómo te sientes hoy?
+                </Label>
+                <Select
+                  value={mood === "" ? "none" : mood}
+                  onValueChange={(value) =>
+                    setMood(value && value !== "none" ? value : "")
+                  }
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Estado de ánimo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {moods.map((m) => (
+                      <SelectItem key={m.value} value={m.value}>
+                        {m.emoji} {m.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="px-1 text-xs text-muted-foreground">
+                  La IA ajusta el tono de las recomendaciones a tu ánimo.
+                </p>
+              </div>
             </CardContent>
           </Card>
 
@@ -326,8 +364,6 @@ export default function FormSection() {
 
               <PcScoreMeter pc={livePcScore} />
 
-              <PcArcade pcScore={livePcScore.score} />
-
               <div className="flex justify-center">
                 <Button
                   type="submit"
@@ -343,6 +379,18 @@ export default function FormSection() {
             </CardContent>
           </Card>
         </form>
+
+        {/* Acceso a las herramientas extra (página dedicada). */}
+        <div className="flex justify-center">
+          <Link
+            href="/herramientas"
+            className="inline-flex items-center gap-2 rounded-md border border-primary/30 bg-primary/5 px-5 py-3 font-display text-sm font-bold uppercase tracking-widest text-primary transition-colors hover:bg-primary/10"
+          >
+            <GamepadIcon className="size-4" />
+            Arcade y mejora de PC
+            <ArrowRightIcon className="size-4" />
+          </Link>
+        </div>
       </div>
     </section>
   );

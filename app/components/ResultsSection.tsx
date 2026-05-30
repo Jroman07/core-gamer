@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { LayoutGridIcon, ListIcon, GaugeIcon } from "lucide-react";
 import GameCard from "./GameCard";
+import RefineChat from "./RefineChat";
 import { useGameContext } from "../context/GameContext";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -147,6 +148,8 @@ export default function ResultsSection() {
           ))}
         </div>
       )}
+
+      {!loading && <RefineChat />}
 
       <div className="flex justify-center">
         <Button variant="outline" size="lg" className="font-display uppercase tracking-widest">
