@@ -1,6 +1,8 @@
 "use client";
 
 import {
+  Area,
+  AreaChart,
   Bar,
   BarChart,
   CartesianGrid,
@@ -20,12 +22,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 
 interface ChartProps {
   totalClicks: number;
   gameData: { name: string; clicks: number }[];
   genreData: { name: string; value: number }[];
+  timeData: { day: string; clicks: number }[];
 }
 
 const COLORS = [
@@ -40,6 +42,7 @@ export default function DashboardCharts({
   totalClicks,
   gameData,
   genreData,
+  timeData,
 }: ChartProps) {
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 md:px-5 md:py-10">
@@ -154,6 +157,61 @@ export default function DashboardCharts({
                       }}
                     />
                   </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card variant="glass" className="lg:col-span-2">
+            <CardHeader>
+              <CardTitle className="font-display">
+                Actividad en el Tiempo
+              </CardTitle>
+              <CardDescription>Clics registrados por día</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[260px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart
+                    data={timeData}
+                    margin={{ top: 10, right: 30, left: 0, bottom: 5 }}
+                  >
+                    <defs>
+                      <linearGradient id="fillClicks" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.4} />
+                        <stop offset="95%" stopColor="var(--primary)" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="rgba(132,147,150,0.1)"
+                      vertical={false}
+                    />
+                    <XAxis
+                      dataKey="day"
+                      tick={{ fill: "var(--muted-foreground)", fontSize: 12 }}
+                    />
+                    <YAxis
+                      allowDecimals={false}
+                      tick={{ fill: "var(--muted-foreground)", fontSize: 12 }}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: "var(--card)",
+                        border: "1px solid rgba(0, 229, 255, 0.3)",
+                        borderRadius: "8px",
+                        color: "var(--foreground)",
+                      }}
+                      itemStyle={{ color: "var(--primary)", fontWeight: 700 }}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="clicks"
+                      stroke="var(--primary)"
+                      strokeWidth={2}
+                      fill="url(#fillClicks)"
+                    />
+                  </AreaChart>
                 </ResponsiveContainer>
               </div>
             </CardContent>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ArrowRightIcon,
   ClockIcon,
@@ -8,6 +8,10 @@ import {
   LayoutGridIcon,
 } from "lucide-react";
 import { useGameContext } from "../context/GameContext";
+import PcScanner from "./PcScanner";
+import PcScoreMeter from "./PcScoreMeter";
+import { computePcScore } from "@/lib/gpuBenchmarks";
+import { guessCpuLabel } from "@/lib/hardware";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -65,7 +69,54 @@ export default function FormSection() {
   const [ram, setRam] = useState("16 GB");
   const [storage, setStorage] = useState("SSD NVMe");
 
-  const { setGames, loading, setLoading } = useGameContext();
+  const { setGames, loading, setLoading, setPcScore } = useGameContext();
+
+  // PC Score en vivo: se recalcula al cambiar cualquier spec.
+  const livePcScore = useMemo(
+    () => computePcScore({ cpu, gpu, ram }),
+    [cpu, gpu, ram]
+  );
+
+  // Persistencia del perfil en localStorage. Se carga tras el montaje (no en el
+  // initializer) para evitar mismatch de hidratación entre servidor y cliente.
+  /* eslint-disable react-hooks/set-state-in-effect */
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("coregamer:profile");
+      if (!saved) return;
+      const p = JSON.parse(saved);
+      if (Array.isArray(p.selectedGenres)) setSelectedGenres(p.selectedGenres);
+      if (p.style) setStyle(p.style);
+      if (typeof p.cpu === "string") setCpu(p.cpu);
+      if (typeof p.gpu === "string") setGpu(p.gpu);
+      if (p.ram) setRam(p.ram);
+      if (p.storage) setStorage(p.storage);
+    } catch {
+      /* noop */
+    }
+  }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        "coregamer:profile",
+        JSON.stringify({ selectedGenres, style, cpu, gpu, ram, storage })
+      );
+    } catch {
+      /* noop */
+    }
+  }, [selectedGenres, style, cpu, gpu, ram, storage]);
+
+  const handleDetected = (hw: {
+    gpu: string;
+    ram: string | null;
+    cores: number;
+  }) => {
+    if (hw.gpu) setGpu(hw.gpu);
+    if (hw.ram) setRam(hw.ram);
+    if (hw.cores && !cpu) setCpu(guessCpuLabel(hw.cores));
+  };
 
   const toggleGenre = (genre: string) => {
     setSelectedGenres((prev) =>
@@ -96,6 +147,7 @@ export default function FormSection() {
 
       if (data.games) {
         setGames(data.games);
+        if (data.pcScore) setPcScore(data.pcScore);
       } else {
         toast.error(data.error || "Ocurrió un error al conectar con la IA.");
       }
@@ -192,6 +244,8 @@ export default function FormSection() {
               </SectionHeading>
             </CardHeader>
             <CardContent className="space-y-8">
+              <PcScanner onDetected={handleDetected} />
+
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
                 <div className="space-y-2">
                   <Label
@@ -267,6 +321,8 @@ export default function FormSection() {
                   </Select>
                 </div>
               </div>
+
+              <PcScoreMeter pc={livePcScore} />
 
               <div className="flex justify-center">
                 <Button

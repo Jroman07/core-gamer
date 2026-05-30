@@ -36,12 +36,26 @@ export default async function DashboardPage() {
     .map(([name, value]) => ({ name, value }))
     .sort((a, b) => b.value - a.value);
 
+  // Agrupar clics por día (línea temporal)
+  const dayCounts: Record<string, number> = {};
+  clicks.forEach((c) => {
+    const day = new Date(c.createdAt).toISOString().slice(0, 10);
+    dayCounts[day] = (dayCounts[day] || 0) + 1;
+  });
+  const timeData = Object.entries(dayCounts)
+    .map(([day, clicks]) => ({
+      day: day.slice(5), // MM-DD
+      clicks,
+    }))
+    .sort((a, b) => a.day.localeCompare(b.day));
+
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-primary)' }}>
       <DashboardCharts 
         totalClicks={totalClicks}
         gameData={gameData}
         genreData={genreData}
+        timeData={timeData}
       />
     </div>
   );
