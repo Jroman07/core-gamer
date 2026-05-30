@@ -114,7 +114,8 @@ export default function FormSection() {
     cores: number;
   }) => {
     if (hw.gpu) setGpu(hw.gpu);
-    if (hw.ram) setRam(hw.ram);
+    // RAM NO se autocompleta: el navegador no puede leer la real (cap 8GB).
+    // El usuario la ajusta a mano; mantenemos su valor guardado.
     if (hw.cores && !cpu) setCpu(guessCpuLabel(hw.cores));
   };
 

@@ -1,7 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { ScanLineIcon, CheckCircle2Icon } from "lucide-react";
+import {
+  ScanLineIcon,
+  CheckCircle2Icon,
+  MonitorIcon,
+  CpuIcon,
+  MemoryStickIcon,
+  GpuIcon,
+  InfoIcon,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { detectHardware, guessRamOption, type DetectedHardware } from "@/lib/hardware";
@@ -17,9 +25,10 @@ interface Props {
 const STEPS = [
   "Inicializando contexto WebGL...",
   "Leyendo GPU (WEBGL_debug_renderer_info)...",
+  "Detectando sistema operativo...",
   "Contando núcleos del procesador...",
+  "Leyendo Client Hints (plataforma/arquitectura)...",
   "Estimando memoria del sistema...",
-  "Calculando potencia gráfica...",
 ];
 
 export default function PcScanner({ onDetected }: Props) {
@@ -38,10 +47,10 @@ export default function PcScanner({ onDetected }: Props) {
     for (let i = 0; i < STEPS.length; i++) {
       setStep(STEPS[i]);
       setProgress(Math.round(((i + 1) / STEPS.length) * 100));
-      await new Promise((r) => setTimeout(r, 420));
+      await new Promise((r) => setTimeout(r, 380));
     }
 
-    const hw = detectHardware();
+    const hw = await detectHardware();
     setResult(hw);
     setScanning(false);
 
@@ -61,6 +70,15 @@ export default function PcScanner({ onDetected }: Props) {
     }
   };
 
+  const os = result?.os.name
+    ? `${result.os.name}${result.os.version ? ` ${result.os.version}` : ""}`
+    : "Desconocido";
+  const cpuLabel =
+    result?.chip ||
+    (result?.arch
+      ? `${result.arch}${result.bitness ? ` ${result.bitness}-bit` : ""}`
+      : "");
+
   return (
     <div className="rounded-md border border-primary/30 bg-primary/5 p-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -71,7 +89,7 @@ export default function PcScanner({ onDetected }: Props) {
               Escáner de PC
             </p>
             <p className="text-xs text-muted-foreground">
-              Detecta tu hardware automáticamente desde el navegador.
+              Detecta SO, GPU, CPU y arquitectura desde el navegador.
             </p>
           </div>
         </div>
@@ -99,24 +117,74 @@ export default function PcScanner({ onDetected }: Props) {
       )}
 
       {result && !scanning && (
-        <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
-          <span className="inline-flex items-center gap-1.5 font-bold text-primary">
+        <div className="mt-4 space-y-3">
+          <span className="inline-flex items-center gap-1.5 text-xs font-bold text-primary">
             <CheckCircle2Icon className="size-4" /> Detectado
           </span>
-          <span className="text-muted-foreground">
-            GPU: <strong className="text-foreground">{result.gpu || "Oculta"}</strong>
-          </span>
-          <span className="text-muted-foreground">
-            Núcleos: <strong className="text-foreground">{result.cpuCores || "?"}</strong>
-          </span>
-          <span className="text-muted-foreground">
-            RAM aprox:{" "}
-            <strong className="text-foreground">
-              {result.ramGb ? `${result.ramGb}GB+` : "?"}
-            </strong>
-          </span>
+
+          <div className="grid grid-cols-1 gap-x-4 gap-y-2 text-xs sm:grid-cols-2">
+            <SpecRow
+              icon={<MonitorIcon className="size-3.5" />}
+              label="Sistema operativo"
+              value={os}
+            />
+            <SpecRow
+              icon={<GpuIcon className="size-3.5" />}
+              label="GPU"
+              value={result.gpu || "Oculta por el navegador"}
+            />
+            <SpecRow
+              icon={<CpuIcon className="size-3.5" />}
+              label="CPU"
+              value={
+                [
+                  result.cpuCores ? `${result.cpuCores} núcleos` : null,
+                  cpuLabel || null,
+                ]
+                  .filter(Boolean)
+                  .join(" · ") || "?"
+              }
+            />
+            <SpecRow
+              icon={<MemoryStickIcon className="size-3.5" />}
+              label="RAM (estimada)"
+              value={
+                result.ramGb
+                  ? `${result.ramGb} GB${result.ramCapped ? "+" : ""}`
+                  : "No expuesta"
+              }
+            />
+          </div>
+
+          <p className="flex items-start gap-1.5 rounded bg-muted/50 p-2 text-[11px] leading-relaxed text-muted-foreground">
+            <InfoIcon className="mt-0.5 size-3.5 shrink-0" />
+            <span>
+              Ningún navegador puede leer la RAM real instalada (
+              <code className="font-mono">deviceMemory</code> está topado a 8 GB
+              por privacidad y no existe en Safari/Firefox). Si tienes más,
+              ajústala a mano en el campo de abajo.
+            </span>
+          </p>
         </div>
       )}
+    </div>
+  );
+}
+
+function SpecRow({
+  icon,
+  label,
+  value,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+}) {
+  return (
+    <div className="flex items-center gap-2">
+      <span className="text-primary">{icon}</span>
+      <span className="text-muted-foreground">{label}:</span>
+      <strong className="truncate text-foreground">{value}</strong>
     </div>
   );
 }
