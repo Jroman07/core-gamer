@@ -81,7 +81,7 @@ export default function HerramientasPage() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <div className="flex flex-col gap-6">
           <Card variant="glass" className="p-6">
             <h2 className="mb-6 flex items-center gap-2 font-display text-xl">
               <WrenchIcon className="size-5 text-gold" />
