@@ -10,6 +10,7 @@ import {
 import { useGameContext } from "../context/GameContext";
 import PcScanner from "./PcScanner";
 import PcScoreMeter from "./PcScoreMeter";
+import PcArcade from "./PcArcade";
 import { computePcScore } from "@/lib/gpuBenchmarks";
 import { guessCpuLabel } from "@/lib/hardware";
 import { Button } from "@/components/ui/button";
@@ -324,6 +325,8 @@ export default function FormSection() {
               </div>
 
               <PcScoreMeter pc={livePcScore} />
+
+              <PcArcade pcScore={livePcScore.score} />
 
               <div className="flex justify-center">
                 <Button
